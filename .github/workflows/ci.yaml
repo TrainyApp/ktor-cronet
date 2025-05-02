@@ -27,4 +27,4 @@ jobs:
           api-level: 36
           arch: 'x86_64'
           target: 'playstore'
-          script: ./gradlew deviceAndroidTest
+          script: ./gradlew connectedCheck
