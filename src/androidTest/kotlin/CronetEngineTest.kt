@@ -46,42 +46,42 @@ class CronetEngineTest {
 
     @Test
     fun testDeleteRequest() = runTest {
-        val response = client.delete("https://httpbin.org/delete")
+        val response = client.delete("https://httpbin.schlaubi.net/delete")
         val body = response.body<Response>()
 
-        assertEquals("https://httpbin.org/delete", body.url)
+        assertEquals("https://httpbin.schlaubi.net/delete", body.url)
     }
 
     @Test
     fun testGetRequest() = runTest {
-        val response = client.get("https://httpbin.org/get")
+        val response = client.get("https://httpbin.schlaubi.net/get")
         val body = response.body<Response>()
 
-        assertEquals("https://httpbin.org/get", body.url)
+        assertEquals("https://httpbin.schlaubi.net/get", body.url)
     }
 
     @Test
     fun testPatchRequest() = runTest {
-        val response = client.patch("https://httpbin.org/patch")
+        val response = client.patch("https://httpbin.schlaubi.net/patch")
         val body = response.body<Response>()
 
-        assertEquals("https://httpbin.org/patch", body.url)
+        assertEquals("https://httpbin.schlaubi.net/patch", body.url)
     }
 
     @Test
     fun testPostRequest() = runTest {
-        val response = client.post("https://httpbin.org/post")
+        val response = client.post("https://httpbin.schlaubi.net/post")
         val body = response.body<Response>()
 
-        assertEquals("https://httpbin.org/post", body.url)
+        assertEquals("https://httpbin.schlaubi.net/post", body.url)
     }
 
     @Test
     fun testPutRequest() = runTest {
-        val response = client.put("https://httpbin.org/put")
+        val response = client.put("https://httpbin.schlaubi.net/put")
         val body = response.body<Response>()
 
-        assertEquals("https://httpbin.org/put", body.url)
+        assertEquals("https://httpbin.schlaubi.net/put", body.url)
     }
 
     @Test
@@ -90,7 +90,7 @@ class CronetEngineTest {
             set("key", "value")
         }
 
-        val response = client.put("https://httpbin.org/put") {
+        val response = client.put("https://httpbin.schlaubi.net/put") {
             setBody(FormDataContent(formData))
         }
         val body = response.body<Response>()
@@ -99,7 +99,7 @@ class CronetEngineTest {
             body.form.forEach { (key, value) -> set(key, value) }
         }
 
-        assertEquals("https://httpbin.org/put", body.url)
+        assertEquals("https://httpbin.schlaubi.net/put", body.url)
         assertEquals(formData, bodyParameters)
     }
 
@@ -108,12 +108,12 @@ class CronetEngineTest {
         val fileContent = "abc"
         val channel = ByteReadChannel(fileContent)
 
-        val response = client.put("https://httpbin.org/put") {
+        val response = client.put("https://httpbin.schlaubi.net/put") {
             setBody(channel)
         }
         val body = response.body<Response>()
 
-        assertEquals("https://httpbin.org/put", body.url)
+        assertEquals("https://httpbin.schlaubi.net/put", body.url)
         assertEquals(fileContent, body.data)
     }
 
@@ -127,12 +127,12 @@ class CronetEngineTest {
             })
         }
 
-        val response = client.put("https://httpbin.org/put") {
+        val response = client.put("https://httpbin.schlaubi.net/put") {
             setBody(MultiPartFormDataContent(formData))
         }
         val body = response.body<Response>()
 
-        assertEquals("https://httpbin.org/put", body.url)
+        assertEquals("https://httpbin.schlaubi.net/put", body.url)
 
         assertEquals(mapOf("key" to "value"), body.form)
         assertEquals(mapOf("file" to "abc"), body.files)
