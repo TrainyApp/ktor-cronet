@@ -26,6 +26,5 @@ jobs:
         with:
           api-level: 36
           arch: 'x86_64'
-          profile: "Pixel 9 Pro"
           target: 'playstore'
           script: ./gradlew check
