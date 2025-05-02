@@ -96,7 +96,7 @@ internal class CronetEngine(
 
         override fun onResponseStarted(request: UrlRequest, info: UrlResponseInfo) {
             Log.d("CronetKtor", "Start reading response for: $request")
-            val contentLength = info.allHeaders["Content-Length"]?.first()?.toIntOrNull() ?: chunkLength
+            val contentLength = info.allHeaders["Content-Length"]?.first()?.toIntOrNull()?.takeIf { it > 0 } ?: chunkLength
             Log.d("CronetKtor", "Allocating $contentLength bytes for response body of: $request")
             buffer = ByteBuffer.allocateDirect(contentLength)
             scope.launch(Dispatchers.IO) {
