@@ -1,0 +1,2 @@
+-keep class com.trainyapp.cronet.CronetEngineContainer
+-dontwarn com.trainyapp.cronet.CronetEngineConfig

@@ -12,7 +12,7 @@ plugins {
 }
 
 group = "app.trainy"
-version = "1.0.2"
+version = "1.0.3"
 
 dependencies {
     api(libs.ktor.client.core)
