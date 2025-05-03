@@ -15,6 +15,6 @@ import org.chromium.net.UrlResponseInfo
  */
 public class CronetRequestFailedException(
     public val request: UrlRequest,
-    public val urlInfo: UrlResponseInfo,
+    public val urlInfo: UrlResponseInfo?,
     cause: CronetException
 ) : IOException(cause)

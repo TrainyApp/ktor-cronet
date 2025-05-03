@@ -6,8 +6,7 @@ import com.trainyapp.cronet.internal.toUploadDataProvider
 import io.ktor.client.engine.*
 import io.ktor.client.request.*
 import io.ktor.client.utils.*
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
+import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.util.*
 import io.ktor.util.date.*
@@ -130,7 +129,7 @@ internal class CronetEngine(
 
         override fun onFailed(
             request: UrlRequest,
-            info: UrlResponseInfo,
+            info: UrlResponseInfo?,
             error: CronetException
         ) {
             continuation.resumeWithException(CronetRequestFailedException(request, info, error))
