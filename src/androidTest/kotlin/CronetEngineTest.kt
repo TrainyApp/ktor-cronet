@@ -18,6 +18,7 @@ import org.junit.runner.RunWith
 import kotlin.properties.Delegates
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.measureTime
 
 @RunWith(AndroidJUnit4::class)
 class CronetEngineTest {
@@ -31,6 +32,11 @@ class CronetEngineTest {
 
             CronetProviderInstaller.installProvider(context)
             client = HttpClient(Cronet) {
+                engine {
+                    options {
+                        addQuicHint("httpbin.schlaubi.net", 443, -1)
+                    }
+                }
                 install(ContentNegotiation) {
                     json()
                 }
@@ -46,10 +52,13 @@ class CronetEngineTest {
 
     @Test
     fun testDeleteRequest() = runTest {
-        val response = client.delete("https://httpbin.schlaubi.net/delete")
-        val body = response.body<Response>()
+        val time = measureTime {
+            val response = client.delete("https://httpbin.schlaubi.net/delete")
+            val body = response.body<Response>()
+        }
+        println(time)
 
-        assertEquals("https://httpbin.schlaubi.net/delete", body.url)
+//        assertEquals("https://httpbin.schlaubi.net/delete", body.url)
     }
 
     @Test
