@@ -12,7 +12,7 @@ plugins {
 }
 
 group = "app.trainy"
-version = "1.0.4"
+version = "1.0.5"
 
 dependencies {
     api(libs.ktor.client.core)
@@ -89,7 +89,7 @@ mavenPublishing {
     coordinates("com.trainyapp", "ktor-cronet")
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = true)
 
-    signAllPublications()
+//    signAllPublications()
 
     pom {
         name = "ktor-cronet"

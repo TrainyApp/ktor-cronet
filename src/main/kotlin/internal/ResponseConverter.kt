@@ -35,7 +35,7 @@ private fun Map<String, List<String>>.toHeaders() = HeadersImpl(dropCompressionH
 // We remove the content encoding headers, as content encoding is already handled by cronet
 private fun Map<String, List<String>>.dropCompressionHeaders(): Map<String, List<String>> {
     return if (containsKey(HttpHeaders.ContentEncoding)) {
-        filter { (key) -> key == HttpHeaders.ContentEncoding || key == HttpHeaders.ContentLength }
+        filter { (key) -> key != HttpHeaders.ContentEncoding && key != HttpHeaders.ContentLength }
     } else {
         this
     }
