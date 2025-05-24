@@ -1,11 +1,9 @@
 package com.trainyapp.cronet.internal
 
-import io.ktor.client.request.HttpResponseData
-import io.ktor.client.utils.EmptyContent
-import io.ktor.http.HeadersImpl
-import io.ktor.http.HttpProtocolVersion
-import io.ktor.http.HttpStatusCode
-import io.ktor.util.date.GMTDate
+import io.ktor.client.request.*
+import io.ktor.client.utils.*
+import io.ktor.http.*
+import io.ktor.util.date.*
 import org.chromium.net.UrlResponseInfo
 import kotlin.coroutines.CoroutineContext
 
@@ -32,4 +30,13 @@ private fun String.toHttpProtocolVersion() = when(this) {
     else -> HttpProtocolVersion.HTTP_1_0
 }
 
-private fun Map<String, List<String>>.toHeaders() = HeadersImpl(this)
+private fun Map<String, List<String>>.toHeaders() = HeadersImpl(dropCompressionHeaders())
+
+// We remove the content encoding headers, as content encoding is already handled by cronet
+private fun Map<String, List<String>>.dropCompressionHeaders(): Map<String, List<String>> {
+    return if (containsKey(HttpHeaders.ContentEncoding)) {
+        filter { (key) -> key == HttpHeaders.ContentEncoding || key == HttpHeaders.ContentLength }
+    } else {
+        this
+    }
+}
