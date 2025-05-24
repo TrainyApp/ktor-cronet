@@ -89,7 +89,7 @@ mavenPublishing {
     coordinates("com.trainyapp", "ktor-cronet")
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = true)
 
-//    signAllPublications()
+    signAllPublications()
 
     pom {
         name = "ktor-cronet"
