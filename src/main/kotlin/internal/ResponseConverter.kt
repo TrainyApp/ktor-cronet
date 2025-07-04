@@ -3,6 +3,7 @@ package com.trainyapp.cronet.internal
 import io.ktor.client.request.*
 import io.ktor.client.utils.*
 import io.ktor.http.*
+import io.ktor.util.*
 import io.ktor.util.date.*
 import org.chromium.net.UrlResponseInfo
 import kotlin.coroutines.CoroutineContext
@@ -30,14 +31,23 @@ private fun String.toHttpProtocolVersion() = when(this) {
     else -> HttpProtocolVersion.HTTP_1_0
 }
 
-private fun Map<String, List<String>>.toHeaders() = HeadersImpl(dropCompressionHeaders())
+private fun Map<String, List<String>>.toHeaders() = object : Headers {
+    override val caseInsensitiveName: Boolean = false
+    private val headersMap = CaseInsensitiveMap<List<String>>().apply {
+        putAll(this@toHeaders.dropCompressionHeaders())
+    }
+
+    override fun getAll(name: String): List<String>? = headersMap[name]
+    override fun names(): Set<String> = headersMap.keys
+    override fun entries(): Set<Map.Entry<String, List<String>>> = headersMap.entries
+    override fun isEmpty(): Boolean = headersMap.isEmpty()
+}
 
 // We remove the content encoding headers, as content encoding is already handled by cronet
 private fun Map<String, List<String>>.dropCompressionHeaders(): Map<String, List<String>> {
-    println("Got headers: $this")
-    println("Has encoding: ${containsKey(HttpHeaders.ContentEncoding)}")
+    println(this)
     return if (containsKey(HttpHeaders.ContentEncoding)) {
-        filter { (key) -> key.equals(HttpHeaders.ContentEncoding, ignoreCase = true) && key.equals(HttpHeaders.ContentLength, ignoreCase = true) }
+        filter { (key) -> key == HttpHeaders.ContentEncoding && key == HttpHeaders.ContentLength }
     } else {
         this
     }
