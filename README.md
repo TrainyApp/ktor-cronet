@@ -7,7 +7,7 @@ This is an implementation of a Ktor client engine, which uses
 
 ```kotlin
 dependencies {
-    implementation("com.trainyapp.cronet", "ktor-cronet", "1.0.0")
+    implementation("com.trainyapp.cronet", "ktor-cronet", "1.0.7")
 }
 ```
 
