@@ -12,7 +12,7 @@ plugins {
 }
 
 group = "app.trainy"
-version = "1.1.0"
+version = "1.1.1"
 
 dependencies {
     api(libs.ktor.client.core)
@@ -91,7 +91,9 @@ mavenPublishing {
     coordinates("com.trainyapp", "ktor-cronet")
     publishToMavenCentral(automaticRelease = true)
 
-    signAllPublications()
+    if (System.getenv("ORG_GRADLE_PROJECT_signingInMemoryKey").isNullOrBlank().not()) {
+        signAllPublications()
+    }
 
     pom {
         name = "ktor-cronet"

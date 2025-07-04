@@ -31,24 +31,13 @@ private fun String.toHttpProtocolVersion() = when(this) {
     else -> HttpProtocolVersion.HTTP_1_0
 }
 
-private fun Map<String, List<String>>.toHeaders() = object : Headers {
-    override val caseInsensitiveName: Boolean = false
-    private val headersMap = CaseInsensitiveMap<List<String>>().apply {
-        putAll(this@toHeaders.dropCompressionHeaders())
-    }
+private val contentEncodingHeaders = listOf(HttpHeaders.ContentEncoding, HttpHeaders.ContentLength)
 
-    override fun getAll(name: String): List<String>? = headersMap[name]
-    override fun names(): Set<String> = headersMap.keys
-    override fun entries(): Set<Map.Entry<String, List<String>>> = headersMap.entries
-    override fun isEmpty(): Boolean = headersMap.isEmpty()
-}
-
-// We remove the content encoding headers, as content encoding is already handled by cronet
-private fun Map<String, List<String>>.dropCompressionHeaders(): Map<String, List<String>> {
-    println(this)
-    return if (containsKey(HttpHeaders.ContentEncoding)) {
-        filter { (key) -> key == HttpHeaders.ContentEncoding && key == HttpHeaders.ContentLength }
-    } else {
-        this
+private fun Map<String, List<String>>.toHeaders(): Headers =
+    headers {
+        appendAll(this@toHeaders)
+        // We remove the content encoding headers, as content encoding is already handled by cronet
+        if (containsKey(HttpHeaders.ContentEncoding)) {
+            contentEncodingHeaders.forEach(::remove)
+        }
     }
-}
