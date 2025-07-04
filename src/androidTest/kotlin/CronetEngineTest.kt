@@ -9,16 +9,21 @@ import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.jsonPrimitive
 import org.junit.BeforeClass
 import org.junit.runner.RunWith
 import kotlin.properties.Delegates
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.time.measureTime
+import kotlin.test.assertTrue
 
 @RunWith(AndroidJUnit4::class)
 class CronetEngineTest {
@@ -52,13 +57,10 @@ class CronetEngineTest {
 
     @Test
     fun testDeleteRequest() = runTest {
-        val time = measureTime {
-            val response = client.delete("https://httpbin.schlaubi.net/delete")
-            val body = response.body<Response>()
-        }
-        println(time)
+        val response = client.delete("https://httpbin.schlaubi.net/delete")
+        val body = response.body<Response>()
 
-//        assertEquals("https://httpbin.schlaubi.net/delete", body.url)
+        assertEquals("https://httpbin.schlaubi.net/delete", body.url)
     }
 
     @Test
@@ -145,5 +147,15 @@ class CronetEngineTest {
 
         assertEquals(mapOf("key" to "value"), body.form)
         assertEquals(mapOf("file" to "abc"), body.files)
+    }
+
+    @Test
+    fun testGZipRequest() = runTest {
+        val response = client.get("https://httpbin.schlaubi.net/gzip")
+        val body = response.bodyAsText()
+        val content = Json.decodeFromString<JsonObject>(body)
+        val gzipped = content["gzipped"]!!.jsonPrimitive.boolean
+
+        assertTrue(gzipped, "Response was not gzipped")
     }
 }

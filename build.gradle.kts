@@ -1,6 +1,6 @@
 import com.vanniktech.maven.publish.AndroidMultiVariantLibrary
-import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.dokka.gradle.workers.ProcessIsolation
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.*
 
 plugins {
@@ -12,7 +12,7 @@ plugins {
 }
 
 group = "app.trainy"
-version = "1.0.5"
+version = "1.0.6"
 
 dependencies {
     api(libs.ktor.client.core)
@@ -42,9 +42,11 @@ android {
         minSdk = 21
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+}
 
-    kotlinOptions {
-        jvmTarget = "1.8"
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_1_8
     }
 }
 
@@ -87,7 +89,7 @@ mavenPublishing {
         )
     )
     coordinates("com.trainyapp", "ktor-cronet")
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = true)
+    publishToMavenCentral(automaticRelease = true)
 
     signAllPublications()
 

@@ -24,7 +24,7 @@ internal fun UrlResponseInfo.toHttpResponseData(
 private fun String.toHttpProtocolVersion() = when(this) {
     "h1", "http/1.0" -> HttpProtocolVersion.HTTP_1_0
     "http/1.1" -> HttpProtocolVersion.HTTP_1_1
-    "h2",  -> HttpProtocolVersion.HTTP_2_0
+    "h2"  -> HttpProtocolVersion.HTTP_2_0
     "h3", "quic" -> HttpProtocolVersion.QUIC
     "quic/1+spdy/3" -> HttpProtocolVersion.SPDY_3
     else -> HttpProtocolVersion.HTTP_1_0
@@ -34,8 +34,10 @@ private fun Map<String, List<String>>.toHeaders() = HeadersImpl(dropCompressionH
 
 // We remove the content encoding headers, as content encoding is already handled by cronet
 private fun Map<String, List<String>>.dropCompressionHeaders(): Map<String, List<String>> {
+    println("Got headers: $this")
+    println("Has encoding: ${containsKey(HttpHeaders.ContentEncoding)}")
     return if (containsKey(HttpHeaders.ContentEncoding)) {
-        filter { (key) -> key != HttpHeaders.ContentEncoding && key != HttpHeaders.ContentLength }
+        filter { (key) -> key.equals(HttpHeaders.ContentEncoding, ignoreCase = true) && key.equals(HttpHeaders.ContentLength, ignoreCase = true) }
     } else {
         this
     }
