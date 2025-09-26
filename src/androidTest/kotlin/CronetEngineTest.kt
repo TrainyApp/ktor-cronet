@@ -14,23 +14,23 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.test.runTest
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.boolean
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.*
 import org.junit.BeforeClass
 import org.junit.runner.RunWith
 import kotlin.properties.Delegates
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
+import kotlin.test.*
+
+@Suppress("UnusedReceiverParameter")
+private val ContentType.Application.JsonIO
+    get() = ContentType("application", "json+io")
 
 @RunWith(AndroidJUnit4::class)
 class CronetEngineTest {
     companion object {
         var client by Delegates.notNull<HttpClient>()
 
+        @OptIn(ExperimentalSerializationApi::class)
         @BeforeClass
         @JvmStatic
         fun setup() {
@@ -45,6 +45,7 @@ class CronetEngineTest {
                 }
                 install(ContentNegotiation) {
                     json()
+                    jsonIo(contentType = ContentType.Application.JsonIO)
                 }
 
                 expectSuccess = true
@@ -113,6 +114,34 @@ class CronetEngineTest {
 
         assertEquals("https://httpbin.schlaubi.net/put", body.url)
         assertEquals(formData, bodyParameters)
+    }
+
+    @Test
+    fun testSerialization() = runTest {
+        val response = client.put("https://httpbin.schlaubi.net/put") {
+            contentType(ContentType.Application.Json)
+            setBody(TestObject.DEFAULT)
+        }
+        val body = response.body<Response>()
+
+
+        assertEquals("https://httpbin.schlaubi.net/put", body.url)
+        val jsonBody = assertNotNull(body.json)
+        assertEquals(TestObject.DEFAULT, Json.decodeFromJsonElement(jsonBody))
+    }
+
+    @Test
+    fun testIoSerialization() = runTest {
+        val response = client.put("https://httpbin.schlaubi.net/put") {
+            contentType(ContentType.Application.JsonIO)
+            setBody(TestObject.DEFAULT)
+        }
+        val body = response.body<Response>()
+
+
+        assertEquals("https://httpbin.schlaubi.net/put", body.url)
+        val jsonBody = assertNotNull(body.json)
+        assertEquals(TestObject.DEFAULT, Json.decodeFromJsonElement(jsonBody))
     }
 
     @Test

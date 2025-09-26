@@ -14,3 +14,10 @@ data class Response(
     val origin: String,
     val url: String
 )
+
+@Serializable
+data class TestObject(val testValue: String) {
+    companion object {
+        val DEFAULT = TestObject("default")
+    }
+}

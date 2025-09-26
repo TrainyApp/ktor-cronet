@@ -57,7 +57,7 @@ internal class CronetEngine(
                                 addHeader(HttpHeaders.ContentType, contentType)
                             }
 
-                            val uploadDataProvider = data.body.toUploadDataProvider(CoroutineScope(callContext))
+                            val uploadDataProvider = data.body.toUploadDataProvider(callContext)
                             setUploadDataProvider(uploadDataProvider, executor)
                         }
                     }
