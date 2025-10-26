@@ -12,6 +12,7 @@ import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import io.ktor.serialization.kotlinx.protobuf.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -19,7 +20,10 @@ import kotlinx.serialization.json.*
 import org.junit.BeforeClass
 import org.junit.runner.RunWith
 import kotlin.properties.Delegates
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @Suppress("UnusedReceiverParameter")
 private val ContentType.Application.JsonIO
@@ -46,6 +50,7 @@ class CronetEngineTest {
                 install(ContentNegotiation) {
                     json()
                     jsonIo(contentType = ContentType.Application.JsonIO)
+                    protobuf()
                 }
 
                 expectSuccess = true
@@ -142,6 +147,17 @@ class CronetEngineTest {
         assertEquals("https://httpbin.schlaubi.net/put", body.url)
         val jsonBody = assertNotNull(body.json)
         assertEquals(TestObject.DEFAULT, Json.decodeFromJsonElement(jsonBody))
+    }
+
+    @Test
+    fun testProtobufSerialization() = runTest {
+        val response = client.put("https://httpbin.schlaubi.net/put") {
+            contentType(ContentType.Application.ProtoBuf)
+            setBody(TestObject.DEFAULT)
+        }
+        val body = response.body<Response>()
+
+        assertEquals("https://httpbin.schlaubi.net/put", body.url)
     }
 
     @Test

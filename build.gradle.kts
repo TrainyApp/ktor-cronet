@@ -12,7 +12,7 @@ plugins {
 }
 
 group = "app.trainy"
-version = "1.2.0"
+version = "1.2.1"
 
 dependencies {
     api(libs.ktor.client.core)
@@ -21,6 +21,7 @@ dependencies {
 
     androidTestImplementation(libs.ktor.client.content.negotiation)
     androidTestImplementation(libs.ktor.serialization.kotlinx.json)
+    androidTestImplementation(libs.ktor.serialization.kotlinx.protobuf)
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.test.ext.junit)
@@ -39,7 +40,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        minSdk = 21
+        minSdk = 23
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 }
