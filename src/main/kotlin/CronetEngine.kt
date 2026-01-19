@@ -47,8 +47,11 @@ internal class CronetEngine(
                 )
                     .apply {
                         setHttpMethod(data.method.value)
-                        data.headers.flattenForEach { key, value ->
-                            addHeader(key, value)
+                        data.headers.forEach { key, values ->
+                            // Cronet doesn't support more than 1 header values, however according to HTTP spec
+                            // multiple values must be combinable into a comma-separated list
+                            // See https://issues.chromium.org/issues/40393640#comment8
+                            addHeader(key, values.joinToString(", "))
                         }
 
                         if (!data.body.isEmpty()) {
