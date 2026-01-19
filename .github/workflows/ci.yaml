@@ -13,8 +13,8 @@ jobs:
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: 24
-      - uses: gradle/actions/setup-gradle@v4
+          java-version: 25
+      - uses: gradle/actions/setup-gradle@v5
       - name: Enable KVM group perms
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
