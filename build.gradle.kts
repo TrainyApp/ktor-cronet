@@ -1,18 +1,19 @@
 import com.vanniktech.maven.publish.AndroidMultiVariantLibrary
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.SourcesJar
 import org.jetbrains.dokka.gradle.workers.ProcessIsolation
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.*
 
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.dokka)
     alias(libs.plugins.maven.publish)
 }
 
 group = "app.trainy"
-version = "1.2.1"
+version = "1.3.0"
 
 dependencies {
     api(libs.ktor.client.core)
@@ -43,6 +44,14 @@ android {
         minSdk = 23
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+    }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
 }
 
 kotlin {
@@ -85,8 +94,8 @@ publishing {
 mavenPublishing {
     configure(
         AndroidMultiVariantLibrary(
-            publishJavadocJar = false,
-            sourcesJar = true
+            sourcesJar = SourcesJar.Sources(),
+            javadocJar = JavadocJar.Dokka("dokkaGeneratePublicationHtml"),
         )
     )
     coordinates("com.trainyapp", "ktor-cronet")
