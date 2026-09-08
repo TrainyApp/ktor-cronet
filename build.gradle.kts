@@ -13,12 +13,12 @@ plugins {
 }
 
 group = "app.trainy"
-version = "1.3.0"
+version = "1.4.0"
 
 dependencies {
     api(libs.ktor.client.core)
     api(libs.play.services.cronet)
-    compileOnly(libs.cronet.fallback)
+    compileOnly(libs.cronet)
 
     androidTestImplementation(libs.ktor.client.content.negotiation)
     androidTestImplementation(libs.ktor.serialization.kotlinx.json)
@@ -38,7 +38,7 @@ kotlin {
 
 android {
     namespace = "com.trainyapp.cronet"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 23
@@ -76,6 +76,7 @@ publishing {
                 val name =
                     type.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.US) else it.toString() }
                 val dokkaJar = tasks.register<Jar>("dokka${name}Jar") {
+                    description = "Creates a jar containing the dokka documentation"
                     archiveClassifier = "${type.name}-javadoc"
                     from(tasks.dokkaGeneratePublicationHtml)
                 }

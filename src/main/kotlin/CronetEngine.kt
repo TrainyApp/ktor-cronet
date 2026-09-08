@@ -8,7 +8,6 @@ import io.ktor.client.request.*
 import io.ktor.client.utils.*
 import io.ktor.http.*
 import io.ktor.http.content.*
-import io.ktor.util.*
 import io.ktor.util.date.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.*
@@ -17,10 +16,7 @@ import org.chromium.net.CronetException
 import org.chromium.net.UrlRequest
 import org.chromium.net.UrlResponseInfo
 import java.nio.ByteBuffer
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.*
 import kotlin.properties.Delegates
 
 private const val chunkLength = 8192
@@ -34,8 +30,9 @@ internal class CronetEngine(
     @InternalAPI
     override suspend fun execute(data: HttpRequestData): HttpResponseData {
         val callContext = callContext()
-        val executor = configExecutor ?: coroutineContext[CoroutineDispatcher]?.asExecutor()
-        ?: error("Could not find a suitable dispatcher for executing the request. Please specify one using withContext()")
+        val executor =
+            configExecutor ?: (coroutineContext[ContinuationInterceptor] as? CoroutineDispatcher)?.asExecutor()
+            ?: error("Could not find a suitable dispatcher for executing the request. Please specify one using withContext()")
 
         return suspendCancellableCoroutine { continuation ->
             val requestTime = GMTDate()
@@ -56,7 +53,8 @@ internal class CronetEngine(
 
                         if (!data.body.isEmpty()) {
                             if (HttpHeaders.ContentType !in data.headers) {
-                                val contentType = data.body.contentType?.toString() ?: error("Content-Type header is required for requests with bodies")
+                                val contentType = data.body.contentType?.toString()
+                                    ?: error("Content-Type header is required for requests with bodies")
                                 addHeader(HttpHeaders.ContentType, contentType)
                             }
 
@@ -98,7 +96,8 @@ internal class CronetEngine(
 
         override fun onResponseStarted(request: UrlRequest, info: UrlResponseInfo) {
             Log.d("CronetKtor", "Start reading response for: $request")
-            val contentLength = info.allHeaders["Content-Length"]?.first()?.toIntOrNull()?.takeIf { it > 0 } ?: chunkLength
+            val contentLength =
+                info.allHeaders["Content-Length"]?.first()?.toIntOrNull()?.takeIf { it > 0 } ?: chunkLength
             Log.d("CronetKtor", "Allocating $contentLength bytes for response body of: $request")
             buffer = ByteBuffer.allocateDirect(contentLength)
             scope.launch(Dispatchers.IO) {

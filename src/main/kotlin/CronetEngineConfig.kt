@@ -36,7 +36,7 @@ public class CronetEngineConfig : HttpClientEngineConfig() {
             } catch (_: ClassNotFoundException) {
                 error(
                     "Cronet is not supported on this device and fallback provider is not available. " +
-                        "Please add https://mvnrepository.com/artifact/org.chromium.net/cronet-fallback/ as a dependency"
+                            "Please add https://mvnrepository.com/artifact/org.chromium.net/cronet-fallback/ as a dependency"
                 )
             }
         }
