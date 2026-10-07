@@ -17,8 +17,12 @@ internal fun OutgoingContent.toUploadDataProvider(callContext: CoroutineContext)
 
     return when (this) {
         is OutgoingContent.ContentWrapper -> delegate().toUploadDataProvider(callContext)
-        is OutgoingContent.ByteArrayContent -> ByteArrayUploadDataProvider(this)
-        is OutgoingContent.ReadChannelContent -> ReadChannelUploadDataProvider(readFrom(), coroutineScope)
+        is OutgoingContent.ByteArrayContent -> ByteBufferUploadDataProvider(bytes())
+        is OutgoingContent.ReadChannelContent -> ReadChannelUploadDataProvider(
+            readFrom(),
+            coroutineScope
+        )
+
         is OutgoingContent.WriteChannelContent -> {
             val readChannel = CoroutineScope(callContext).writer(callContext) {
                 writeTo(channel)
@@ -31,16 +35,28 @@ internal fun OutgoingContent.toUploadDataProvider(callContext: CoroutineContext)
     }
 }
 
-private data class ByteArrayUploadDataProvider(private val content: OutgoingContent.ByteArrayContent) :
+private data class ByteBufferUploadDataProvider(private val content: ByteBuffer) :
     UploadDataProvider() {
-    override fun getLength(): Long = content.contentLength ?: Long.MAX_VALUE
+    constructor(array: ByteArray) : this(ByteBuffer.wrap(array))
+
+    override fun getLength(): Long = content.limit().toLong()
 
     override fun read(uploadDataSink: UploadDataSink, byteBuffer: ByteBuffer) {
-        byteBuffer.put(content.bytes())
+        if (byteBuffer.limit() >= content.remaining()) {
+            byteBuffer.put(content)
+        } else {
+            val oldLimit = byteBuffer.limit()
+            content.limit(content.position() + byteBuffer.remaining())
+            byteBuffer.put(content)
+            byteBuffer.limit(oldLimit)
+        }
         uploadDataSink.onReadSucceeded(false)
     }
 
-    override fun rewind(uploadDataSink: UploadDataSink) = uploadDataSink.onRewindSucceeded()
+    override fun rewind(uploadDataSink: UploadDataSink) {
+        content.position(0)
+        uploadDataSink.onRewindSucceeded()
+    }
 }
 
 private data class ReadChannelUploadDataProvider(
